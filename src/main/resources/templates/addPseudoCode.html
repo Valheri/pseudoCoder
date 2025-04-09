@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add PseudoCode</title>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+    <h1>Add New PseudoCode</h1>
+    <form th:action="@{/pseudoCodes/add}" method="post">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" th:value="${pseudoCode.name}" required />
+        </div>
+        <div>
+            <button type="submit">Add</button>
+        </div>
+    </form>
+    <a th:href="@{/pseudoCodes}">Cancel</a>
+</body>
+</html>

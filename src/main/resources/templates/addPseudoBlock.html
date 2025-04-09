@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add PseudoBlock</title>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+    <h1>Add PseudoBlock</h1>
+    <form th:action="@{/pseudoCodes/{id}/addPseudoBlock(id=${pseudoCode.id})}" method="post">
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required />
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required></textarea>
+        </div>
+        <div>
+            <label for="blockOrder">Order:</label>
+            <input type="number" id="blockOrder" name="blockOrder" required />
+        </div>
+        <div>
+            <label for="parameters">Parameters:</label>
+            <textarea id="parameters" name="parameters"></textarea>
+        </div>
+        <div>
+            <label for="output">Output:</label>
+            <input type="text" id="output" name="output" />
+        </div>
+        <div>
+            <label for="category">Category:</label>
+            <select id="category" name="category" required>
+                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+            </select>
+        </div>
+        <div>
+            <button type="submit">Add</button>
+        </div>
+    </form>
+    <a th:href="@{/pseudoCodes/{id}(id=${pseudoCode.id})}">Cancel</a>
+</body>
+</html>
