@@ -1,36 +1,39 @@
 package fi.valher.pseudocoder.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
+@JsonIgnoreProperties({})
 public class PseudoBlock {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private String description;
-    private int blockOrder; // Renamed from 'order'
+    private int blockOrder;
     private String parameters;
     private String output;
 
     @ManyToOne
+    @JsonIgnoreProperties("pseudoBlocks") // Exclude pseudoBlocks from the category when serializing
     private Category category;
-
-    @ManyToOne
-    private PseudoCode pseudoCode;
 
     public PseudoBlock() {}
 
-    public PseudoBlock(String name, String description, Category category, PseudoCode pseudoCode, int blockOrder, String parameters, String output) {
+    public PseudoBlock(String name, String description, Category category, int blockOrder, String parameters, String output) {
         this.name = name;
         this.description = description;
         this.category = category;
-        this.pseudoCode = pseudoCode;
-        this.blockOrder = blockOrder; // Updated reference
+        this.blockOrder = blockOrder;
         this.parameters = parameters;
         this.output = output;
     }
@@ -59,11 +62,11 @@ public class PseudoBlock {
         this.description = description;
     }
 
-    public int getBlockOrder() { // Renamed getter
+    public int getBlockOrder() {
         return blockOrder;
     }
 
-    public void setBlockOrder(int blockOrder) { // Renamed setter
+    public void setBlockOrder(int blockOrder) {
         this.blockOrder = blockOrder;
     }
 
@@ -88,17 +91,9 @@ public class PseudoBlock {
     }
 
     public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public PseudoCode getPseudoCode() {
-        return pseudoCode;
-    }
-
-    public void setPseudoCode(PseudoCode pseudoCode) {
-        if (pseudoCode == null || pseudoCode.getId() == null) {
-            throw new IllegalArgumentException("Invalid code ID");
+        if (category == null || category.getId() == null) {
+            throw new IllegalArgumentException("Category must be valid and have an ID.");
         }
-        this.pseudoCode = pseudoCode;
+        this.category = category;
     }
 }

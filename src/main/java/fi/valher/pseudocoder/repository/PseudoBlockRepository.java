@@ -10,5 +10,5 @@ import fi.valher.pseudocoder.model.PseudoCode;
 public interface PseudoBlockRepository extends CrudRepository<PseudoBlock, Long> {
     List<PseudoBlock> findByName(String name);
 
-    List<PseudoBlock> findByPseudoCode(PseudoCode pseudoCode); // Return a list instead of a single result
+    List<PseudoBlock> findByCategory_PseudoCode(PseudoCode pseudoCode);
 }

@@ -1,6 +1,11 @@
 package fi.valher.pseudocoder.model;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -10,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 public class PseudoCode {
     @Id
@@ -20,17 +26,23 @@ public class PseudoCode {
     @ManyToOne
     private AppUser user;
 
-   
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pseudoCode")
-    private List<PseudoBlock> pseudoBlocks;
+    @JsonManagedReference // Allows serialization of categories without recursion
+    private List<Category> categories;
 
     public PseudoCode() {}
 
+    // Updated convenience constructor: initialize only categories
     public PseudoCode(String name, AppUser user) {
         this.name = name;
         this.user = user;
-       
+        this.categories = new ArrayList<>();
+    }
+
+    public PseudoCode(String name, AppUser user, List<Category> categories) {
+        this.name = name;
+        this.user = user;
+        this.categories = categories;
     }
 
     public Long getId() {
@@ -57,12 +69,11 @@ public class PseudoCode {
         this.user = user;
     }
 
-   
-    public List<PseudoBlock> getPseudoBlocks() {
-        return pseudoBlocks;
+    public List<Category> getCategories() {
+        return categories;
     }
 
-    public void setPseudoBlocks(List<PseudoBlock> pseudoBlocks) {
-        this.pseudoBlocks = pseudoBlocks;
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }
