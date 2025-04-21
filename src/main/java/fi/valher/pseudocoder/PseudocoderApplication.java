@@ -19,7 +19,7 @@ public class PseudocoderApplication {
 	@Bean
 	public CorsFilter corsFilter() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.addAllowedOrigin("http://localhost:5173"); // Allow frontend origin
+		config.addAllowedOrigin("*"); // Allow all origins
 		config.addAllowedMethod("*"); // Allow all HTTP methods
 		config.addAllowedHeader("*"); // Allow all headers
 		config.setAllowCredentials(true); // Allow credentials (e.g., cookies)

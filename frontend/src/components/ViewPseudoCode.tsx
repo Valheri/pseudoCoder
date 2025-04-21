@@ -81,9 +81,9 @@ const ViewPseudoCode: React.FC<ViewPseudoCodeProps> = ({
         if (!name) return;
         const colour = prompt("Enter category colour (e.g., blue, #ff0000):");
         if (!colour) return;
-        axios.post(`http://localhost:8080/api/pseudoCodes/${pseudoCode.id}/categories`, { name, colour })
+        axios.post(`/api/pseudoCodes/${pseudoCode.id}/categories`, { name, colour })
             .then(() => {
-                axios.get(`http://localhost:8080/api/pseudoCodes/${pseudoCode.id}`)
+                axios.get(`/api/pseudoCodes/${pseudoCode.id}`)
                     .then(response => {
                         onUpdatePseudoCode(response.data);
                     })
@@ -94,9 +94,9 @@ const ViewPseudoCode: React.FC<ViewPseudoCodeProps> = ({
 
     const handleDeleteCategory = (categoryId: number) => {
         if (!window.confirm("Are you sure you want to delete this category?")) return;
-        axios.delete(`http://localhost:8080/api/categories/${categoryId}`)
+        axios.delete(`/api/categories/${categoryId}`)
             .then(() => {
-                axios.get(`http://localhost:8080/api/pseudoCodes/${pseudoCode.id}`)
+                axios.get(`/api/pseudoCodes/${pseudoCode.id}`)
                     .then(response => onUpdatePseudoCode(response.data))
                     .catch(error => console.error("Error fetching updated pseudoCode:", error));
             })

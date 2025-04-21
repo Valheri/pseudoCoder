@@ -33,7 +33,7 @@ const App: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get<PseudoCode[]>('http://localhost:8080/api/pseudoCodes')
+        axios.get<PseudoCode[]>('/api/pseudoCodes')
             .then(response => {
                 console.log('Response data:', response.data);
                 setPseudoCodes(response.data);
@@ -42,7 +42,7 @@ const App: React.FC = () => {
     }, []);
 
     const handleViewPseudoCode = (id: number) => {
-        axios.get<PseudoCode>(`http://localhost:8080/api/pseudoCodes/${id}`)
+        axios.get<PseudoCode>(`/api/pseudoCodes/${id}`)
             .then(response => {
                 setSelectedPseudoCode(response.data);
                 navigate(`/pseudoCodes/${id}`);
@@ -51,28 +51,28 @@ const App: React.FC = () => {
     };
 
     const handleAddPseudoCode = (name: string) => {
-        axios.post('http://localhost:8080/api/pseudoCodes', { name })
+        axios.post('/api/pseudoCodes', { name })
             .then(() => {
-                axios.get<PseudoCode[]>('http://localhost:8080/api/pseudoCodes')
+                axios.get<PseudoCode[]>('/api/pseudoCodes')
                     .then(response => setPseudoCodes(response.data));
             })
             .catch(error => console.error('Error adding pseudoCode:', error));
     };
 
     const handleAddPseudoBlock = (pseudoCodeId: number, blockData: any) => {
-        axios.post(`http://localhost:8080/api/pseudoCodes/${pseudoCodeId}/addPseudoBlock`, blockData)
+        axios.post(`/api/pseudoCodes/${pseudoCodeId}/addPseudoBlock`, blockData)
             .then(() => {
-                axios.get<PseudoCode>(`http://localhost:8080/api/pseudoCodes/${pseudoCodeId}`)
+                axios.get<PseudoCode>(`/api/pseudoCodes/${pseudoCodeId}`)
                     .then(response => setSelectedPseudoCode(response.data));
             })
             .catch(error => console.error('Error adding pseudoBlock:', error));
     };
 
     const handleEditPseudoBlock = (blockId: number, updatedBlock: any) => {
-        axios.put(`http://localhost:8080/api/pseudoBlocks/${blockId}`, updatedBlock)
+        axios.put(`/api/pseudoBlocks/${blockId}`, updatedBlock)
             .then(() => {
                 if (selectedPseudoCode) {
-                    axios.get<PseudoCode>(`http://localhost:8080/api/pseudoCodes/${selectedPseudoCode.id}`)
+                    axios.get<PseudoCode>(`/api/pseudoCodes/${selectedPseudoCode.id}`)
                         .then(response => setSelectedPseudoCode(response.data));
                 }
             })
@@ -80,10 +80,10 @@ const App: React.FC = () => {
     };
 
     const handleDeletePseudoBlock = (blockId: number) => {
-        axios.delete(`http://localhost:8080/api/pseudoBlocks/${blockId}`)
+        axios.delete(`/api/pseudoBlocks/${blockId}`)
             .then(() => {
                 if (selectedPseudoCode) {
-                    axios.get<PseudoCode>(`http://localhost:8080/api/pseudoCodes/${selectedPseudoCode.id}`)
+                    axios.get<PseudoCode>(`/api/pseudoCodes/${selectedPseudoCode.id}`)
                         .then(response => setSelectedPseudoCode(response.data));
                 }
             })
@@ -91,9 +91,9 @@ const App: React.FC = () => {
     };
 
     const handleDeletePseudoCode = (id: number) => {
-        axios.delete(`http://localhost:8080/api/pseudoCodes/${id}`)
+        axios.delete(`/api/pseudoCodes/${id}`)
             .then(() => {
-                axios.get<PseudoCode[]>('http://localhost:8080/api/pseudoCodes')
+                axios.get<PseudoCode[]>('/api/pseudoCodes')
                     .then(response => {
                         setPseudoCodes(response.data);
                         if (selectedPseudoCode && selectedPseudoCode.id === id) {
