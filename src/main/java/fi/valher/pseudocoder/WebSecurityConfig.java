@@ -38,7 +38,10 @@ public class WebSecurityConfig {
 				.requestMatchers(
 					antMatcher("/css/**"),
 					antMatcher("/login"),
-					antMatcher("/api/login"))
+					antMatcher("/api/login"),
+					antMatcher("/index.html"),
+					antMatcher("/static/**"),
+					antMatcher("/"))
 				.permitAll()
 				// Permit OPTIONS requests
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
