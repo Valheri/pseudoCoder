@@ -31,7 +31,7 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain configure(HttpSecurity http) throws Exception {
 		http
-			.requiresChannel(channel -> channel.anyRequest().requiresSecure()) // Enforce HTTPS
+			.requiresChannel(channel -> channel.anyRequest().requiresSecure()) // In production, HTTPS is enforced; adjust for local development if needed
 			.cors().and() // enable CORS support
 			.csrf(csrf -> csrf.disable())
 			.authorizeHttpRequests(authorize -> authorize
@@ -40,7 +40,7 @@ public class WebSecurityConfig {
 					antMatcher("/login"),
 					antMatcher("/api/login"))
 				.permitAll()
-				// Permit all OPTIONS requests to avoid preflight redirect issues
+				// Permit OPTIONS requests
 				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.requestMatchers("/api/**").permitAll() // optionally permit API endpoints
 				.anyRequest().authenticated()) // Protect all other endpoints including /pseudoCodes

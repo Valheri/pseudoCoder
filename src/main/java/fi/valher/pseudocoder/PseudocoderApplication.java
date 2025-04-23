@@ -1,5 +1,7 @@
 package fi.valher.pseudocoder;
 
+import java.util.Collections;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -19,13 +21,13 @@ public class PseudocoderApplication {
 	@Bean
 	public CorsFilter corsFilter() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.addAllowedOrigin("*"); // Allow all origins
-		config.addAllowedMethod("*"); // Allow all HTTP methods
-		config.addAllowedHeader("*"); // Allow all headers
-		config.setAllowCredentials(true); // Allow credentials (e.g., cookies)
+		config.setAllowedOrigins(Collections.singletonList("https://pseudocoder-8c8740fd3925.herokuapp.com"));
+		config.addAllowedMethod("*");
+		config.addAllowedHeader("*");
+		config.setAllowCredentials(true);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", config); // Apply CORS to all endpoints
+		source.registerCorsConfiguration("/**", config);
 		return new CorsFilter(source);
 	}
 }

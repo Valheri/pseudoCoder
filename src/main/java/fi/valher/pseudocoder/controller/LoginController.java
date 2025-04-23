@@ -4,15 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fi.valher.pseudocoder.model.AppUser;
 import fi.valher.pseudocoder.repository.UserRepository;
 
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true") // Allow frontend origin
 @RestController
 public class LoginController {
 

@@ -6,9 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class FallbackController {
 
-    @RequestMapping(value = "/{path:[^\\.]*}")
+    // Matches all routes that do not start with "api" and do not contain a period
+    @RequestMapping(value = "/{path:^(?!api).*$}")
     public String redirect() {
-        // Forward any unmapped paths (except those with a period) to index.html
+        // API routes are excluded from fallback.
         return "forward:/index.html";
     }
 }

@@ -135,7 +135,7 @@ const App: React.FC = () => {
     return (
         <Routes>
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Navigate to={isAuthenticated ? "/pseudoCodes" : "/login"} replace />} />
             <Route
                 path="/pseudoCodes"
                 element={
