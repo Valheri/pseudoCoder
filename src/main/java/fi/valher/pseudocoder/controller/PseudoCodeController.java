@@ -38,6 +38,11 @@ public class PseudoCodeController {
     // Initialize test data
     @PostConstruct
     public void initTestData() {
+        // Add check: if data already exists, skip initialization
+        if (pseudoCodeRepository.count() > 0) { 
+            return;
+        }
+        
         // Create two distinct PseudoCodes (with auto-initialized categories)
         PseudoCode code1 = new PseudoCode("Code 1", null);
         PseudoCode code2 = new PseudoCode("Code 2", null);
