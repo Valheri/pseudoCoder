@@ -22,59 +22,58 @@ import fi.valher.pseudocoder.repository.UserRepository;
 @EnableMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
 
-	private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-	public WebSecurityConfig(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+    public WebSecurityConfig(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-	@Bean
-	public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-		http
-			.requiresChannel(channel -> channel.anyRequest().requiresSecure()) // In production, HTTPS is enforced; adjust for local development if needed
-			.cors().and() // enable CORS support
-			.csrf(csrf -> csrf.disable())
-			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(
-					antMatcher("/css/**"),
-					antMatcher("/login"),
-					antMatcher("/api/login"),
-					antMatcher("/index.html"),
-					antMatcher("/static/**"),
-					antMatcher("/"))
-				.permitAll()
-				// Permit OPTIONS requests
-				.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-				.requestMatchers("/api/**").permitAll() // optionally permit API endpoints
-				.anyRequest().authenticated()) // Protect all other endpoints including /pseudoCodes
-			.formLogin(formlogin -> formlogin
-				.loginPage("/login")
-				.defaultSuccessUrl("/pseudoCodes", true)
-				.permitAll())
-			.logout(logout -> logout.permitAll());
-		return http.build();
-	}
+    @Bean
+    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+        http
+            .requiresChannel(channel -> channel.anyRequest().requiresSecure()) // Enforce HTTPS in production
+            .cors().and() // Enable CORS support
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity (adjust as needed)
+            .authorizeHttpRequests(authorize -> authorize
+                // Allow access to static resources
+                .requestMatchers(
+                    antMatcher("/css/**"),
+                    antMatcher("/js/**"),
+                    antMatcher("/images/**"),
+                    antMatcher("/static/**"),
+                    antMatcher("/favicon.ico"),
+                    antMatcher("/index.html"))
+                .permitAll()
+                // Permit OPTIONS requests (for CORS preflight)
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Allow API endpoints without authentication
+                .requestMatchers("/api/**").permitAll()
+                // Protect all other endpoints
+                .anyRequest().authenticated())
+            .formLogin(formlogin -> formlogin
+                .loginPage("/login")
+                .defaultSuccessUrl("/pseudoCodes", true)
+                .permitAll())
+            .logout(logout -> logout.permitAll());
+        return http.build();
+    }
 
-	@Bean
-	public UserDetailsService userDetailsService() {
-		return username -> {
-			AppUser user = userRepository.findByUsername(username);
-			if (user == null) {
-				throw new UsernameNotFoundException("User not found");
-			}
-			return org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
-				.password(user.getPassword())
-				.roles(user.getRole())
-				.build();
-		};
-	}
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> {
+            AppUser user = userRepository.findByUsername(username);
+            if (user == null) {
+                throw new UsernameNotFoundException("User not found");
+            }
+            return org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
+                .password(user.getPassword())
+                .roles(user.getRole())
+                .build();
+        };
+    }
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
-
-
-
-
