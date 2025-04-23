@@ -18,7 +18,6 @@ import fi.valher.pseudocoder.model.PseudoCode;
 import fi.valher.pseudocoder.repository.CategoryRepository;
 import fi.valher.pseudocoder.repository.PseudoBlockRepository;
 import fi.valher.pseudocoder.repository.PseudoCodeRepository;
-import jakarta.annotation.PostConstruct;
 
 @RestController
 @RequestMapping("/api")
@@ -33,58 +32,7 @@ public class PseudoCodeController {
     @Autowired
     private PseudoBlockRepository pseudoBlockRepository;
 
-    // Initialize test data
-    @PostConstruct
-    public void initTestData() {
-
-        // Add check: if data already exists, skip initialization
-        if (pseudoCodeRepository.count() > 0) {
-            return;
-        }
-
-        // Create two distinct PseudoCodes (with auto-initialized categories)
-        PseudoCode code1 = new PseudoCode("Code 1", null);
-        PseudoCode code2 = new PseudoCode("Code 2", null);
-
-        // Create distinct categories for Code 1
-        Category cat1Code1 = new Category("UI Design", "blue", code1);
-        Category cat2Code1 = new Category("Game Mechanics", "green", code1);
-        code1.getCategories().add(cat1Code1);
-        code1.getCategories().add(cat2Code1);
-
-        // Create distinct categories for Code 2
-        Category cat1Code2 = new Category("Physics", "purple", code2);
-        Category cat2Code2 = new Category("Audio", "pink", code2);
-        code2.getCategories().add(cat1Code2);
-        code2.getCategories().add(cat2Code2);
-
-        pseudoCodeRepository.save(code1);
-        pseudoCodeRepository.save(code2);
-
-        // Instead of adding pseudoBlocks directly on PseudoCode, add them to the corresponding Category
-        PseudoBlock block1 = new PseudoBlock("Main Menu", "Design the main menu UI", cat1Code1, 1, "{}", null);
-        PseudoBlock block2 = new PseudoBlock("Player Movement", "Implement basic player movement", cat2Code1, 2,
-                "{\"speed\": \"5\"}", null);
-        cat1Code1.getPseudoBlocks().add(block1);
-        cat2Code1.getPseudoBlocks().add(block2);
-        pseudoBlockRepository.save(block1);
-        pseudoBlockRepository.save(block2);
-
-        PseudoBlock block3 = new PseudoBlock("Enemy AI", "Implement enemy AI", cat1Code2, 1,
-                "{\"aggressiveness\": \"high\"}", null);
-        PseudoBlock block4 = new PseudoBlock("Sound Effects", "Add sound effects", cat2Code2, 2, "{\"volume\":\"80\"}",
-                null);
-        cat1Code2.getPseudoBlocks().add(block3);
-        cat2Code2.getPseudoBlocks().add(block4);
-        pseudoBlockRepository.save(block3);
-        pseudoBlockRepository.save(block4);
-
-        // Optional: Save categories if needed
-        categoryRepository.save(cat1Code1);
-        categoryRepository.save(cat2Code1);
-        categoryRepository.save(cat1Code2);
-        categoryRepository.save(cat2Code2);
-    }
+   
 
     @PutMapping(path = "/pseudoBlocks/{id}", consumes = "application/json")
     public void editPseudoBlock(@PathVariable Long id, @RequestBody PseudoBlock updatedBlock) {

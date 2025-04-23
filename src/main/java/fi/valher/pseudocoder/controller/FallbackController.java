@@ -8,6 +8,6 @@ public class FallbackController {
 
     @RequestMapping(value = {"/{path:[^\\.]*}"})
     public String redirect() {
-        return "forward:/index.html";
+        return "forward:/index.html"; // Serve the frontend's index.html
     }
 }

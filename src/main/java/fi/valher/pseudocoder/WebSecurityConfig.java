@@ -1,7 +1,5 @@
 package fi.valher.pseudocoder;
 
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,30 +29,34 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
-            .requiresChannel(channel -> channel.anyRequest().requiresSecure()) // Enforce HTTPS in production
-            .cors().and() // Enable CORS support
+            .requiresChannel(channel -> 
+                channel.anyRequest().requiresSecure() // Enforce HTTPS in production
+            )
+            .cors(cors -> cors.and()) // Enable CORS support
             .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity (adjust as needed)
-            .authorizeHttpRequests(authorize -> authorize
-                // Allow access to static resources
-                .requestMatchers(
-                    antMatcher("/css/**"),
-                    antMatcher("/js/**"),
-                    antMatcher("/images/**"),
-                    antMatcher("/static/**"),
-                    antMatcher("/favicon.ico"),
-                    antMatcher("/index.html"))
-                .permitAll()
-                // Permit OPTIONS requests (for CORS preflight)
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // Allow API endpoints without authentication
-                .requestMatchers("/api/**").permitAll()
-                // Protect all other endpoints
-                .anyRequest().authenticated())
-            .formLogin(formlogin -> formlogin
-                .loginPage("/login")
-                .defaultSuccessUrl("/pseudoCodes", true)
-                .permitAll())
-            .logout(logout -> logout.permitAll());
+            .authorizeHttpRequests(authorize -> 
+                authorize
+                    // Allow access to static resources
+                    .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**", "/favicon.ico", "/index.html", "/assets/**").permitAll()
+                    // Permit OPTIONS requests (for CORS preflight)
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    // Allow API endpoints without authentication
+                    .requestMatchers("/api/**").permitAll()
+                    // Allow access to the root and fallback routes
+                    .requestMatchers("/", "/{path:[^\\.]*}").permitAll()
+                    // Protect all other endpoints
+                    .anyRequest().authenticated()
+            )
+            .formLogin(formLogin -> 
+                formLogin
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/pseudoCodes", true)
+                    .permitAll()
+            )
+            .logout(logout -> 
+                logout.permitAll()
+            );
+
         return http.build();
     }
 
@@ -66,9 +68,9 @@ public class WebSecurityConfig {
                 throw new UsernameNotFoundException("User not found");
             }
             return org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
-                .password(user.getPassword())
-                .roles(user.getRole())
-                .build();
+                    .password(user.getPassword())
+                    .roles(user.getRole())
+                    .build();
         };
     }
 
