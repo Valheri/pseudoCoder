@@ -1,7 +1,7 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
-import Index from './components/Index';
+import React, { JSX, useEffect, useState } from 'react';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import Login from './components/Login';
 import PseudoCodes from './components/PseudoCodes';
 import ViewPseudoCode from './components/ViewPseudoCode';
 
@@ -30,16 +30,36 @@ interface PseudoCode {
 const App: React.FC = () => {
     const [pseudoCodes, setPseudoCodes] = useState<PseudoCode[]>([]);
     const [selectedPseudoCode, setSelectedPseudoCode] = useState<PseudoCode | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get<PseudoCode[]>('/api/pseudoCodes')
+        if (isAuthenticated) {
+            axios.get<PseudoCode[]>('/api/pseudoCodes')
+                .then(response => {
+                    console.log('Response data:', response.data);
+                    setPseudoCodes(response.data);
+                })
+                .catch(error => console.error('Error fetching pseudoCodes:', error));
+        }
+    }, [isAuthenticated]);
+
+    const handleLogin = (username: string, password: string) => {
+        axios.post('/api/login', { username, password }, { withCredentials: true })
             .then(response => {
-                console.log('Response data:', response.data);
-                setPseudoCodes(response.data);
+                console.log('Login successful:', response.data);
+                setIsAuthenticated(true);
+                navigate('/pseudoCodes');
             })
-            .catch(error => console.error('Error fetching pseudoCodes:', error));
-    }, []);
+            .catch(error => {
+                console.error('Login failed:', error.response ? error.response.data : error.message);
+                alert('Login failed: ' + (error.response ? error.response.data : 'Network error'));
+            });
+    };
+
+    const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+        return isAuthenticated ? children : <Navigate to="/login" replace />;
+    };
 
     const handleViewPseudoCode = (id: number) => {
         axios.get<PseudoCode>(`/api/pseudoCodes/${id}`)
@@ -114,32 +134,39 @@ const App: React.FC = () => {
 
     return (
         <Routes>
-            <Route path="/" element={<Index onEnter={handleBackToHome} />} />
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route
                 path="/pseudoCodes"
                 element={
-                    <PseudoCodes
-                        pseudoCodes={pseudoCodes}
-                        onAddPseudoCode={handleAddPseudoCode}
-                        onViewPseudoCode={handleViewPseudoCode}
-                        onDeletePseudoCode={handleDeletePseudoCode}
-                        onBack={handleBackToHome}
-                    />
+                    <PrivateRoute>
+                        <PseudoCodes
+                            pseudoCodes={pseudoCodes}
+                            onAddPseudoCode={handleAddPseudoCode}
+                            onViewPseudoCode={handleViewPseudoCode}
+                            onDeletePseudoCode={handleDeletePseudoCode}
+                            onBack={handleBackToHome}
+                        />
+                    </PrivateRoute>
                 }
             />
             <Route
                 path="/pseudoCodes/:id"
                 element={
-                    selectedPseudoCode && (
-                        <ViewPseudoCode
-                            pseudoCode={selectedPseudoCode}
-                            onAddPseudoBlock={handleAddPseudoBlock}
-                            onEditPseudoBlock={handleEditPseudoBlock}
-                            onDeletePseudoBlock={handleDeletePseudoBlock}
-                            onBack={handleBackToPseudoCodes}
-                            onUpdatePseudoCode={(updated) => setSelectedPseudoCode(updated)}
-                        />
-                    )
+                    <PrivateRoute>
+                        {selectedPseudoCode ? (
+                            <ViewPseudoCode
+                                pseudoCode={selectedPseudoCode}
+                                onAddPseudoBlock={handleAddPseudoBlock}
+                                onEditPseudoBlock={handleEditPseudoBlock}
+                                onDeletePseudoBlock={handleDeletePseudoBlock}
+                                onBack={handleBackToPseudoCodes}
+                                onUpdatePseudoCode={(updated) => setSelectedPseudoCode(updated)}
+                            />
+                        ) : (
+                            <div>Loading...</div>
+                        )}
+                    </PrivateRoute>
                 }
             />
         </Routes>
