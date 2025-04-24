@@ -42,7 +42,7 @@ const ViewPseudoCode: React.FC<ViewPseudoCodeProps> = ({
     const [editingBlock, setEditingBlock] = useState<PseudoBlock | null>(null);
     const [isAdding, setIsAdding] = useState(false);
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
-
+    const [jsonOutput, setJsonOutput] = useState<string>("");
     // Aggregate pseudoBlocks from all categories in pseudoCode
     // Map each block so that it gets the full category info.
     const aggregatedBlocks = pseudoCode.categories
@@ -81,6 +81,19 @@ const ViewPseudoCode: React.FC<ViewPseudoCodeProps> = ({
         if (!name) return;
         const colour = prompt("Enter category colour (e.g., blue, #ff0000):");
         if (!colour) return;
+        // Validate the color input
+        const isValidColor = (color: string) => {
+            const s = new Option().style;
+            s.color = color;
+            return s.color !== '';
+        };
+
+        if (!isValidColor(colour)) {
+            alert("Invalid color. Please enter a valid color name or hex code.");
+            return;
+        }
+
+
         axios.post(`/api/pseudoCodes/${pseudoCode.id}/categories`, { name, colour })
             .then(() => {
                 axios.get(`/api/pseudoCodes/${pseudoCode.id}`)
@@ -102,6 +115,68 @@ const ViewPseudoCode: React.FC<ViewPseudoCodeProps> = ({
             })
             .catch(error => console.error("Error deleting category:", error));
     };
+
+    const handleExportToJson = () => {
+        const categoriesToExport = selectedCategoryId
+            ? pseudoCode.categories?.filter(category => category.id === selectedCategoryId)
+            : pseudoCode.categories;
+
+        const metadata = {
+            description: "This JSON contains categories and their associated pseudoBlocks for a pseudoCode project.",
+            structure: {
+                categories: [
+                    {
+                        id: "number",
+                        name: "string",
+                        colour: "string",
+                        pseudoBlocks: [
+                            {
+                                id: "number",
+                                name: "string",
+                                description: "string",
+                                blockOrder: "number",
+                                parameters: "string",
+                                output: "string | null"
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        const formattedJson = JSON.stringify(
+            {
+                metadata,
+                data: categoriesToExport?.map(category => ({
+                    id: category.id,
+                    name: category.name,
+                    colour: category.colour,
+                    pseudoBlocks: category.pseudoBlocks?.map(block => ({
+                        id: block.id,
+                        name: block.name,
+                        description: block.description,
+                        blockOrder: block.blockOrder,
+                        parameters: block.parameters,
+                        output: block.output
+                    }))
+                }))
+            },
+            null,
+            2
+        ); // Pretty-print JSON
+        setJsonOutput(formattedJson || "[]");
+    };
+
+    const handleCopyToClipboard = () => {
+        navigator.clipboard.writeText(jsonOutput).then(() => {
+            alert("JSON copied to clipboard!");
+        }).catch(err => {
+            console.error("Failed to copy JSON to clipboard:", err);
+        });
+    };
+
+
+
 
     return (
         <div className="max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -139,7 +214,25 @@ const ViewPseudoCode: React.FC<ViewPseudoCodeProps> = ({
                     >
                         Add PseudoBlock
                     </button>
-
+                    <button
+                        onClick={handleExportToJson}
+                        className="mb-6 ml-4 bg-green-500 hover:bg-green-600 text-white font-medium px-4 py-2 rounded transition-colors duration-300"
+                    >
+                        To JSON
+                    </button>
+                    <button
+                        onClick={handleCopyToClipboard}
+                        disabled={!jsonOutput}
+                        className={`mb-6 ml-4 ${!jsonOutput ? 'opacity-50 cursor-not-allowed' : 'bg-gray-500 hover:bg-gray-600'} text-white font-medium px-4 py-2 rounded transition-colors duration-300`}
+                    >
+                        Copy to Clipboard
+                    </button>
+                    <textarea
+                        readOnly
+                        value={jsonOutput}
+                        className="w-full h-40 p-4 border border-gray-300 rounded-lg mt-4"
+                        placeholder="JSON output will appear here..."
+                    />
                     <div className="flex items-center mb-4 space-x-2">
                         <div className="mr-2 font-medium">Filter by category:</div>
                         <button
