@@ -43,6 +43,7 @@ const ViewPseudoCode: React.FC<ViewPseudoCodeProps> = ({
     const [isAdding, setIsAdding] = useState(false);
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
     const [jsonOutput, setJsonOutput] = useState<string>("");
+
     // Aggregate pseudoBlocks from all categories in pseudoCode
     // Map each block so that it gets the full category info.
     const aggregatedBlocks = pseudoCode.categories
@@ -53,14 +54,24 @@ const ViewPseudoCode: React.FC<ViewPseudoCodeProps> = ({
             }))
         )
         : [];
-    
+
 
     // Filter blocks by selected category using the full category id
     const filteredBlocks = selectedCategoryId
         ? aggregatedBlocks.filter(block => block.category?.id === selectedCategoryId)
         : aggregatedBlocks;
 
-    
+    const handleSaveBlock = (blockData: any) => {
+        if (isAdding) {
+            const { id, ...newBlockData } = blockData;
+            onAddPseudoBlock(pseudoCode.id, newBlockData);
+        } else if (editingBlock) {
+            onEditPseudoBlock(editingBlock.id, blockData);
+        }
+        setEditingBlock(null);
+        setIsAdding(false);
+    };
+
     const handleCancel = () => {
         setEditingBlock(null);
         setIsAdding(false);
@@ -106,22 +117,6 @@ const ViewPseudoCode: React.FC<ViewPseudoCodeProps> = ({
             .catch(error => console.error("Error deleting category:", error));
     };
 
-    const handleSaveBlock = (blockData: any) => {
-        if (isAdding) {
-            const { id, ...newBlockData } = blockData;
-            onAddPseudoBlock(pseudoCode.id, newBlockData);
-        } else if (editingBlock) {
-            axios.put(`/api/pseudoBlocks/${editingBlock.id}`, blockData)
-                .then(() => {
-                    axios.get(`/api/pseudoCodes/${pseudoCode.id}`)
-                        .then(response => onUpdatePseudoCode(response.data))
-                        .catch(error => console.error("Error fetching updated pseudoCode:", error));
-                })
-                .catch(error => console.error("Error editing pseudoBlock:", error));
-        }
-        setEditingBlock(null);
-        setIsAdding(false);
-    };
 
     const handleExportToJson = () => {
         const categoriesToExport = selectedCategoryId
