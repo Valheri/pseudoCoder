@@ -7,6 +7,9 @@ PseudoCoder is a web application designed to help users manage and organize pseu
 - **Valheri**  
   [GitHub Profile](https://github.com/Valheri)  
 
+## Heroku single deployment
+  [Heroku pseudoCoder](https://pseudocoder-8c8740fd3925.herokuapp.com/)
+
 ## Features
 
 - **User Authentication**: Secure login functionality using Spring Security.
@@ -39,19 +42,19 @@ PseudoCoder is a web application designed to help users manage and organize pseu
 
 ### API Endpoints
 Authentication
-POST /api/login: Authenticate a user.
-PseudoCodes
-GET /api/pseudoCodes: Retrieve all pseudo-codes.
-POST /api/pseudoCodes: Create a new pseudo-code.
-GET /api/pseudoCodes/{id}: Retrieve a pseudo-code by ID.
-DELETE /api/pseudoCodes/{id}: Delete a pseudo-code.
-Categories
-POST /api/pseudoCodes/{id}/categories: Create a category for a pseudo-code.
-DELETE /api/categories/{id}: Delete a category.
-PseudoBlocks
-POST /api/pseudoCodes/{id}/addPseudoBlock: Add a pseudo-block to a category.
-PUT /api/pseudoBlocks/{id}: Edit a pseudo-block.
-DELETE /api/pseudoBlocks/{id}: Delete a pseudo-block.
+- POST /api/login: Authenticate a user. 
+**PseudoCodes**
+- GET /api/pseudoCodes: Retrieve all pseudo-codes.
+- POST /api/pseudoCodes: Create a new pseudo-code.
+- GET /api/pseudoCodes/{id}: Retrieve a pseudo-code by ID.
+- DELETE /api/pseudoCodes/{id}: Delete a pseudo-code. 
+**Categories**
+- POST /api/pseudoCodes/{id}/categories: Create a category for a pseudo-code.
+- DELETE /api/categories/{id}: Delete a category.
+**PseudoBlocks**
+- POST /api/pseudoCodes/{id}/addPseudoBlock: Add a pseudo-block to a category.
+- PUT /api/pseudoBlocks/{id}: Edit a pseudo-block.
+- DELETE /api/pseudoBlocks/{id}: Delete a pseudo-block.
 
 
 License
