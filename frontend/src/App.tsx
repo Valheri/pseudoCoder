@@ -103,13 +103,31 @@ const App: React.FC = () => {
     };
 
     const handleEditPseudoBlock = (id: number, updatedBlock: any) => {
-        // Adjusted to match the expected signature
-        console.log(`Editing pseudo block ${id}`, updatedBlock);
+        axios.put(`${API_BASE_URL}/api/pseudoBlocks/${id}`, updatedBlock)
+            .then(() => {
+                if (selectedPseudoCode) {
+                    // Refresh the selected pseudoCode after editing the block
+                    axios.get<PseudoCode>(`${API_BASE_URL}/api/pseudoCodes/${selectedPseudoCode.id}`)
+                        .then(response => setSelectedPseudoCode(response.data))
+                        .catch(error => console.error("Error fetching updated pseudoCode:", error));
+                }
+            })
+            .catch(error => console.error("Error editing pseudoBlock:", error));
     };
 
     const handleDeletePseudoBlock = (blockId: number) => {
-        // Implement or mock this function to fix the error
-        console.log(`Deleting pseudo block ${blockId}`);
+        if (!window.confirm("Are you sure you want to delete this pseudo block?")) return;
+    
+        axios.delete(`${API_BASE_URL}/api/pseudoBlocks/${blockId}`)
+            .then(() => {
+                if (selectedPseudoCode) {
+                    // Refresh the selected pseudoCode after deletion
+                    axios.get<PseudoCode>(`${API_BASE_URL}/api/pseudoCodes/${selectedPseudoCode.id}`)
+                        .then(response => setSelectedPseudoCode(response.data))
+                        .catch(error => console.error("Error fetching updated pseudoCode:", error));
+                }
+            })
+            .catch(error => console.error("Error deleting pseudoBlock:", error));
     };
 
     const handleDeletePseudoCode = (id: number) => {

@@ -53,24 +53,14 @@ const ViewPseudoCode: React.FC<ViewPseudoCodeProps> = ({
             }))
         )
         : [];
-    console.log("Aggregated pseudoBlocks:", aggregatedBlocks);  // Debug log
+    
 
     // Filter blocks by selected category using the full category id
     const filteredBlocks = selectedCategoryId
         ? aggregatedBlocks.filter(block => block.category?.id === selectedCategoryId)
         : aggregatedBlocks;
 
-    const handleSaveBlock = (blockData: any) => {
-        if (isAdding) {
-            const { id, ...newBlockData } = blockData;
-            onAddPseudoBlock(pseudoCode.id, newBlockData);
-        } else if (editingBlock) {
-            onEditPseudoBlock(editingBlock.id, blockData);
-        }
-        setEditingBlock(null);
-        setIsAdding(false);
-    };
-
+    
     const handleCancel = () => {
         setEditingBlock(null);
         setIsAdding(false);
@@ -114,6 +104,23 @@ const ViewPseudoCode: React.FC<ViewPseudoCodeProps> = ({
                     .catch(error => console.error("Error fetching updated pseudoCode:", error));
             })
             .catch(error => console.error("Error deleting category:", error));
+    };
+
+    const handleSaveBlock = (blockData: any) => {
+        if (isAdding) {
+            const { id, ...newBlockData } = blockData;
+            onAddPseudoBlock(pseudoCode.id, newBlockData);
+        } else if (editingBlock) {
+            axios.put(`/api/pseudoBlocks/${editingBlock.id}`, blockData)
+                .then(() => {
+                    axios.get(`/api/pseudoCodes/${pseudoCode.id}`)
+                        .then(response => onUpdatePseudoCode(response.data))
+                        .catch(error => console.error("Error fetching updated pseudoCode:", error));
+                })
+                .catch(error => console.error("Error editing pseudoBlock:", error));
+        }
+        setEditingBlock(null);
+        setIsAdding(false);
     };
 
     const handleExportToJson = () => {
