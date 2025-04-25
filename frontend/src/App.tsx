@@ -76,6 +76,10 @@ const App: React.FC = () => {
     };
 
     const handleAddPseudoCode = (name: string) => {
+        if (!name.trim()) {
+            alert("PseudoCode name cannot be empty.");
+            return;
+        }
         axios.post(`${API_BASE_URL}/api/pseudoCodes`, { name })
             .then(() => {
                 axios.get<PseudoCode[]>(`${API_BASE_URL}/api/pseudoCodes`)

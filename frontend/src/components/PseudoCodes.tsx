@@ -23,10 +23,12 @@ const PseudoCodes: React.FC<PseudoCodesProps> = ({
     const [newPseudoCodeName, setNewPseudoCodeName] = useState('');
 
     const handleAddPseudoCode = () => {
-        if (newPseudoCodeName.trim()) {
-            onAddPseudoCode(newPseudoCodeName);
-            setNewPseudoCodeName(''); // Clear the input field after adding
+        if (!newPseudoCodeName.trim()) {
+            alert("PseudoCode name cannot be empty.");
+            return;
         }
+        onAddPseudoCode(newPseudoCodeName);
+        setNewPseudoCodeName(''); // Clear the input field after adding
     };
 
     return (
